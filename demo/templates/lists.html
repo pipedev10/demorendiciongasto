@@ -1,0 +1,236 @@
+ {% extends "menu.html" %} {% block subnav%}
+<style>
+    .breadcrumb {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    
+    .breadcrumb a {
+        color: #fff;
+    }
+    
+    .breadcrumb-item.active {
+        color: #fff;
+    }
+    
+    .dataTables_paginate {
+        margin-top: 15px;
+    }
+</style>
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block content %} {% load static %}
+<div class="row">
+    <div class="col-12">
+        <div class="card-wrapper">
+            <!-- Custom form validation -->
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-1">
+                                <a class="btn btn-block btn-link" href="{{request.META.HTTP_REFERER}}">
+                                    <i class="fas fa-2x fa-chevron-left"></i>
+                                </a>
+                        </div>
+                        <div class="col-11">
+                            <h1 class="mt-1">{{title}}</h1>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            {% if breadcrumbs %}
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb breadcrumb-links">
+                                    <li class="breadcrumb-item"><a href="{% url 'home'%}">Inicio</a></li>
+                                    {% for bc in breadcrumbs %}
+                                        {% if bc.is_active %}
+                                            <li class="breadcrumb-item active" aria-current="page">{{bc.name}}</li>
+                                        {% else %}
+                                            {% if bc.params == 1 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 2 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 3 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 bc.param3 %}">{{bc.name}}</a></li>
+                                            {% else %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url %}">{{bc.name}}</a></li>
+                                            {% endif %}
+                                            
+                                        {% endif %}
+                                    {% endfor %}
+                                </ol>
+                            </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col-lg-8">
+                            <p class="mb-0">
+                                
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!--HTML CONTENT-->
+                    <br>
+                    <div class="col-md-12 justify-md-center">
+                        <div class="card-deck">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group input-group-alternative">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        </div>
+                                        <input maxlength="100" id="searchInTable" class="form-control form-control-alternative" placeholder="Buscar" type="search">
+                                    </div>
+                                </div>
+                            </div>
+                            <table>
+
+                            </table>
+                            <div class="col-md-3 ">
+                                <a href="{% url 'crear_rendiciones' %}" style="color:#fff" class="btn btn-primary btn-block" btn-lg btn-block ">Crear</a>
+                            </div>
+                            
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table" class="table align-items-center table-flush table-striped table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        {% for h in ths %}
+                                        <th>{{h}}</th>
+                                        {% endfor %}
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in lists %}
+                                    <tr>
+                                        {% for item in xheaders %}
+                                        <td>{{ obj|get_item:item }}</td>
+                                        {% endfor %}
+                                        <td class="text-right">
+                                        <div class="dropdown">
+                                            {% if tipo == "centro" %}
+                                            <a class="btn btn-sm btn-icon-only text-light" href="{% url 'rendiciones_centro' obj.id %}" >
+                                            <i class="fas fa-2x fa-chevron-right"></i>
+                                            </a>
+                                            {% elif tipo == "detalle" %}
+                                            <a class="btn btn-sm btn-icon-only text-light" href="{% url 'detalle_rendicion' obj.rendicion.id %}" >
+                                                    <i class="fas fa-2x fa-chevron-right"></i>
+                                                    </a>
+                                            {% elif tipo == "detalle2" %}
+                                            <a class="btn btn-sm btn-icon-only text-light" href="{% url 'detalle_rendicion' obj.id %}" >
+                                                    <i class="fas fa-2x fa-chevron-right"></i>
+                                                    </a>
+                                            {% endif %}
+                                        </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--HTML CONTENT END-->
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+    <!-- Modal Begin -->
+    <div class="modal fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <img alt="loading" src="{% static 'assets/img/35.gif' %}">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End-->
+    {% endblock %} {% block js %} {% load static %}
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.1.5/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                "paging": true,
+                "info": false,
+                "lengthChange": false,
+                "language": {
+                    "url": "{% static 'js/datatables_lang.json' %}"
+                },
+                "initComplete": function(settings, json) {
+                    $("#table_filter").hide()
+
+                }
+            });
+            oTable = $('#table').DataTable(); //pay attention to capital D, which is mandatory to retrieve "api" datatables' object, as @Lionel said
+            $('#searchInTable').keyup(function() {
+                oTable.search($(this).val()).draw();
+            })
+
+            //new $.fn.dataTable.FixedHeader($('#table'))
+
+            $('body').on('click', '[data-toggle="modal"]', function() {
+                $($(this).data("target") + ' .modal-body').load($(this).data("remote"));
+            });
+
+        
+        })
+function btn_delete(url){
+            Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            type: '',
+            showCancelButton: true,
+            confirmButtonColor: '#1CB0f6',
+            cancelButtonColor: '#D33131',
+            confirmButtonText: 'Si, bórralo!',
+            cancelButtonText:'Cancelar',
+            }).then((result) => {
+            if (result.value) {
+                
+                window.location.href = url
+            }
+            })
+        }
+        var popup = window.self;
+
+        function openPopUp(url) {
+            popup.opener = window.open(url, 'popup', 'width=600,height=800,location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes');
+            console.log("se abre")
+        }
+    
+    </script>
+    {% endblock js %}

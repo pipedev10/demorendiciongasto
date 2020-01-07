@@ -1,0 +1,15 @@
+{% extends 'base_login.html' %}
+
+{% block content %}
+
+  <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                <h3>¡Confirme su email!</h3>
+                  <small>Gracias por registrarte en Digitally, ahora te enviamos un correo electrónico a {{email}} para confirmar su direccion.</small>
+              </div>
+              
+              <div class="text-center">
+              <a class="btn btn-primary my-4" href="{% url "login" %}">Regístrate</a>
+                </div>
+            </div>
+{% endblock %}

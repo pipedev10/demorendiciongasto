@@ -1,0 +1,190 @@
+{% extends "menu.html" %} {% block subnav%}
+<style>
+    .breadcrumb {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    
+    .breadcrumb a {
+        color: #fff;
+    }
+    
+    .breadcrumb-item.active {
+        color: #fff;
+    }
+    
+    {% load static %}
+</style>
+{% if form_name == "NEED_GROUPS" %}
+<style>
+    label.error {
+        color: red !important;
+    }
+    
+    .nopad {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    /*image gallery*/
+    
+    .image-checkbox {
+        cursor: pointer;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        border: 4px solid transparent;
+        margin-bottom: 0;
+        outline: 0;
+    }
+    
+    .image-checkbox input[type="checkbox"] {
+        display: none;
+    }
+    
+    .image-checkbox-checked {
+        border-color: #4783B0;
+    }
+    
+    .image-checkbox .fa {
+        position: absolute;
+        color: #4A79A3;
+        background-color: #fff;
+        padding: 10px;
+        top: 0;
+        right: 0;
+        display: none;
+    }
+    
+    .image-checkbox-checked .fa {
+        display: block !important;
+    }
+    
+    .img-thumbnail {
+        min-height: 100px;
+        max-height: 100px;
+        object-fit: cover;
+        object-position: center;
+        padding: 0px;
+    }
+    
+    .forma {
+        width: 100px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+</style>
+<link type="text/css" href="{% static 'assets/css/select2.min.css' %}" rel="stylesheet"> {% endif %}
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block content %} {% load crispy_forms_tags %}
+
+
+<div class="row">
+    <div class="col">
+        <div class="card-wrapper">
+            <!-- Custom form validation -->
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-1">
+                                <a class="btn btn-block btn-link" href="{{request.META.HTTP_REFERER}}">
+                                    <i class="fas fa-2x fa-chevron-left"></i>
+                                </a>
+                        </div>
+                        <div class="col-11">
+                            <h1 class="mt-1">{{title}}</h1>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            {% if breadcrumbs %}
+                            <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb breadcrumb-links">
+                                <li class="breadcrumb-item"><a href="{% url 'home'%}">Inicio</a></li>
+                                {% for bc in breadcrumbs %}
+                                    {% if bc.is_active %}
+                                        <li class="breadcrumb-item active" aria-current="page">{{bc.name}}</li>
+                                    {% else %}
+                                       {% if bc.params == 1 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 2 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 3 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 bc.param3 %}">{{bc.name}}</a></li>
+                                            {% else %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url %}">{{bc.name}}</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ol>
+                            </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <p class="mb-0">
+                                
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+                    <form method="post" id="form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+ 
+                        
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block js %} {% load static %}
+<script src="{% static 'js/jquery.validate.min.js' %}"></script>
+<script src="{% static 'js/validations.js' %}"></script>
+{% if form_name == "NEED_GROUPS" %}
+<script>
+    $(".image-checkbox").each(function() {
+        if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
+            $(this).addClass('image-checkbox-checked');
+        } else {
+            $(this).removeClass('image-checkbox-checked');
+        }
+    });
+
+    // sync the state to the input
+    $(".image-checkbox").on("click", function(e) {
+        $(this).toggleClass('image-checkbox-checked');
+        var $checkbox = $(this).find('input[type="checkbox"]');
+        $checkbox.prop("checked", !$checkbox.prop("checked"))
+
+        e.preventDefault();
+    });
+    $(document).ready(function() {
+        /*const date = new Date();
+        const currentMonth = date.getMonth();
+        const currentDate = date.getDate();
+        const currentYear = date.getFullYear();
+        $("#id_death_line").datepicker({
+            format: 'yy-mm-dd',
+            //minDate: new Date(currentYear, currentMonth, currentDate),
+            //yearRange: '2018:c',
+        });*/
+    });
+</script>
+{% endif %} {% endblock js %}

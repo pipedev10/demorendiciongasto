@@ -1,0 +1,19 @@
+{% extends 'base_login.html' %}
+
+{% block content %}
+
+  <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                <h3>Welcome to Digitally</h3>
+                {% if message %}
+                  <small>Bienvenido a Digitally y gracias por registrarte !. Usted puede seguir adelante para <a href="{% url 'password_reset' %}">restablecer su contraseña</a> ahora.</small>
+                {% else %}
+                 <small>¡UPS! el código es incorrecto o fue usado</small>
+                {% endif %}
+              </div>
+              
+              <div class="text-center">
+              <a class="btn btn-primary my-4" href="{% url "password_reset" %}">Restablecer la contraseña</a>
+                </div>
+            </div>
+{% endblock %}

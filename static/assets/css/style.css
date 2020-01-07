@@ -1,0 +1,25 @@
+.card-img-top{
+    height: 200px;
+    object-fit: contain;
+    object-position: center;
+}
+.card-esp{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 300px;
+
+}
+.card-body-esp {
+padding: 0.4rem !important;
+}
+.txt-small-esp{
+    font-size: 12px;
+    font-weight: 400;
+    text-align: right;
+}
+@media(max-width: 576px){
+    .btn{
+        margin-top:10px;
+        margin-bottom:10px;
+    }
+}

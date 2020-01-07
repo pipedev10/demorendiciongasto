@@ -1,0 +1,223 @@
+ {% extends "menu.html" %} {% block subnav%}
+<style>
+    .breadcrumb {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    
+    .breadcrumb a {
+        color: #fff;
+    }
+    
+    .breadcrumb-item.active {
+        color: #fff;
+    }
+    
+    .dataTables_paginate {
+        margin-top: 15px;
+    }
+</style>
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block content %} {% load static %}
+<div class="row">
+    <div class="col-12">
+        <div class="card-wrapper">
+            <!-- Custom form validation -->
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-1">
+                                <a class="btn btn-block btn-link" href="{{request.META.HTTP_REFERER}}">
+                                    <i class="fas fa-2x fa-chevron-left"></i>
+                                </a>
+                        </div>
+                        <div class="col-11">
+                            <h1 class="mt-1">Detalle de rendición</h1>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            {% if breadcrumbs %}
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb breadcrumb-links">
+                                    <li class="breadcrumb-item"><a href="{% url 'home'%}">Inicio</a></li>
+                                    {% for bc in breadcrumbs %}
+                                        {% if bc.is_active %}
+                                            <li class="breadcrumb-item active" aria-current="page">{{bc.name}}</li>
+                                        {% else %}
+                                            {% if bc.params == 1 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 2 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 %}">{{bc.name}}</a></li>
+                                            {% elif bc.params == 3 %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url bc.param1 bc.param2 bc.param3 %}">{{bc.name}}</a></li>
+                                            {% else %}
+                                            <li class="breadcrumb-item"><a href="{% url bc.url %}">{{bc.name}}</a></li>
+                                            {% endif %}
+                                            
+                                        {% endif %}
+                                    {% endfor %}
+                                </ol>
+                            </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col-lg-8">
+                            
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!--HTML CONTENT-->
+                    <br>
+                    <div class="row">
+                        <div class="col-md-8 justify-md-center">
+                            <h4>Detalle de gastos</h4>
+                            <div class="table-responsive">
+                                <table id="table" class="table align-items-center table-flush table-striped table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Centro</th>
+                                            <th>Item</th>
+                                            <th>Monto</th>
+                                            <th>tipo_de_gasto</th>
+                                            <th>tipo_de_documento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{detalle.rendicion.centro}}</td>
+                                            <td>{{detalle.rendicion.item}}</td>
+                                            <td>${{detalle.rendicion.monto}}</td>
+                                            <td>{{detalle.rendicion.tipo_de_gasto}}</td>
+                                            <td>{{detalle.rendicion.get_tipo_de_documento_display}}</td>
+                                        </tr>                                
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="div_id_comentario" class="form-group"> <label for="id_comentario" class="col-form-label  requiredField">
+                                    Comentario</label> <div class=""> <textarea name="comentario"  rows="3" maxlength="250" class="textarea form-control" disabled required="" id="id_comentario">{{detalle.rendicion.comentario}}</textarea> </div> </div>
+                            <br>
+                            <div class="">
+                                {% if detalle.estado == "CR" or detalle.estado == "RV" and user.is_staff %}
+                                <h4>Aprobar o rechazar</h4>
+                                <form action="{% url 'aprobar_rendicion' detalle.rendicion.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                                <div class="col-md-6 justify-md-center">
+                                        <div id="div_id_estado" class="form-group focused">
+                                            <label for="estado" class="col-form-label  requiredField">
+                                                Acción<span class="asteriskField">*</span> </label> <div class="">
+                                                    <select name="estado" class="select form-control valid" id="estado" aria-invalid="false">
+                                                        <option value="AP" selected="">Aprobar</option>
+                                                        <option value="RE">Rechazar</option> 
+                                
+                                </select> </div> </div>
+                                    </div>
+                                    <div class="col-md-6 justify-md-center">
+                                        <div id="div_id_comentario" class="form-group"> <label for="id_comentario" class="col-form-label  requiredField">
+                                            Comentario<span class="asteriskField">*</span> </label> <div class=""> <textarea name="comentario" rows="3" maxlength="250" class="textarea form-control" required="" id="id_comentario"></textarea> </div> </div>
+                                        </div>
+                                            <button type="submit" class="btn btn-block btn-primary">Guardar</button>
+                                        </div>
+                                            </form>
+                                            </div>
+                                            {% elif detalle.estado == "RE"  and user.is_staff is False %}
+                                            <h4>Apelar Rechazo</h4>
+                                            <form action="{% url 'solicitar_re_evaluar' detalle.rendicion.id %}" method="POST">
+                                                    
+                                                
+                                                    {% csrf_token %}
+                                                    <div id="div_id_comentario" class="form-group"> <label for="id_comentario" class="col-form-label  requiredField">
+                                                        Comentario<span class="asteriskField">*</span> </label> <div class=""> <textarea name="comentario" rows="3" maxlength="250" class="textarea form-control" required="" id="id_comentario"></textarea> </div> </div>
+                                                    </div>
+                                                        <button type="submit" class="btn btn-block btn-primary">Guardar</button>
+                                                    
+                                                        </form>
+                                                   
+                                            {% else %}
+                </div>
+                                            {% endif %}
+
+                            <br>
+                            <h4>Historial de cambios</h4>
+                            <div class="table-responsive">
+                                <table id="table" class="table align-items-center table-flush table-striped table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            {% for h in ths %}
+                                            <th>{{h}}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for obj in lists %}
+                                        <tr>
+                                            {% for item in xheaders %}
+                                            <td>{{ obj|get_item:item }}</td>
+                                            {% endfor %}
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{detalle.rendicion.comprobante.url}}" target="_blank">
+                                <img src="{{detalle.rendicion.comprobante.url}}" alt="" class="img-fluid" >
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+    <!-- Modal Begin -->
+    <div class="modal fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <img alt="loading" src="{% static 'assets/img/35.gif' %}">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End-->
+    {% endblock %} {% block js %} {% load static %}
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.1.5/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+    s
+    {% endblock js %}
